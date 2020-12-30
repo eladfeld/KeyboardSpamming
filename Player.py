@@ -22,3 +22,5 @@ class Player:
             self.conn.send(message.encode('utf8'))
         except:
             pass
+    def get_history(self):
+        return self.history

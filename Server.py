@@ -7,12 +7,15 @@ from scapy.arch import get_if_addr
 from Color import bcolors
 from Group import Group
 from Player import Player
+from statistics import mode 
+
 
 groups = [Group(), Group()]
 MAGIC_COOKIE = [0xfe, 0xed, 0xbe, 0xef]
 MESSAGE_TYPE = [0x2]
 PORT_NUM = [0x13, 0x8d]
 BUFFER_SIZE = 32
+NUMBER_OF_SECONDS_TO_WAIT = 10
 
 init_part_ended = False
 game_part_ended = False
@@ -23,7 +26,7 @@ def make_offer():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     message = bytearray(MAGIC_COOKIE + MESSAGE_TYPE + PORT_NUM)
-    for i in range(10):
+    for i in range(NUMBER_OF_SECONDS_TO_WAIT):
         server_socket.sendto(message, ('<broadcast>', 13117))
         print(bcolors.HEADER + 'sending an offer!')
         time.sleep(1)
@@ -87,6 +90,23 @@ def sand_welcome_messages():
                   1].print_players() + 'Start pressing keys on your keyboard as fast as you can!!\n'
     broadcast_all(message)
 
+def most_frequent(List): 
+    counter = 0
+    num = List[0] 
+      
+    for i in List: 
+        curr_frequency = List.count(i) 
+        if(curr_frequency> counter): 
+            counter = curr_frequency 
+            num = i 
+  
+    return num 
+
+def get_most_typed_char():
+    history = groups[0].get_history() + groups[1].get_history()
+    char = mode(history)
+    return (historycount(char), (char))
+
 
 def print_result():
     group1_score = str(groups[0].get_group_score())
@@ -100,6 +120,12 @@ def print_result():
     else:
         message = 'Game over!\nGroup 1 typed in ' + str(group1_score) + ' characters. Group 2 typed in ' + str(group2_score) + ' characters.\n' + 'group ' + str(winning_group) + ' wins! Congratulations to the winners:\n==\n' + \
                   groups[winning_group - 1].print_players()
+
+    #print some statistics
+    avarage_char_typed = (group1_score + group2_score) / NUMBER_OF_SECONDS_TO_WAIT
+    most_typed_char, number_of_instances = get_most_typed_char()
+
+    message += bcolors.OKBLUE + 'SOME STATISTICS:\nthe avarage charachters per seconds: ' + str(avarage_char_typed) + '\nthe most typed character is: ' + most_typed_char + '\nit was typed: ' + str(number_of_instances)
     broadcast_all(message)
 
     print('group1 scored: ' + group1_score + '\ngroup2 scored: ' + group2_score)
@@ -112,6 +138,6 @@ if __name__ == '__main__':
     t1.start()
     t1.join()
     t2.join()
-    time.sleep(10)
+    time.sleep(NUMBER_OF_SECONDS_TO_WAIT)
     print_result()
     game_part_ended = True

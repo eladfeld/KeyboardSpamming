@@ -2,8 +2,11 @@ import socket
 import threading
 import time
 from Color import bcolors
+import select
 import tty
 import sys
+from scapy.arch import get_if_addr
+
 
 
 list_of_clients = []
@@ -65,6 +68,7 @@ if __name__ == '__main__':
                 # listen_thread = threading.Thread(target=listen_until_end, name='listenthread', args=(client_socket, ))
                 # listen_thread.start()
                 client_socket.setblocking(False)
+                tty.setcbreak(sys.stdin)
                 while not stop:
                     try:
                         data = client_socket.recv(BUFFER_SIZE)
@@ -76,8 +80,8 @@ if __name__ == '__main__':
                         pass
                     # reciveing characters from the user and send it to the server in order to win!
                     input_char = ''
-                    if select.select([sys.stdin], [], [], 0)[0]:
-                        input_char = tty.setcbreak(sys.stdin)
+                    if select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
+                        input_char = sys.stdin.read(1)
                         client_socket.send(input_char.encode('utf-8'))
                     #print(input_char.decode('utf-8'))
         except Exception as e:
