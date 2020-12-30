@@ -71,7 +71,7 @@ if __name__ == '__main__':
                 except Exception as e:
                     pass
                 # reciveing characters from the user and send it to the server in order to win!
-                tty.setraw(sys.stdin)
+                tty.setraw(sys.stdin.fileno())
                 input_char = sys.stdin.read(1).encode('utf-8')
                 #input_char = msvcrt.getch()
                 # input_char = 'c'.encode('utf-8')
