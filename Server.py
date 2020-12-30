@@ -3,8 +3,7 @@ import threading
 import time
 import random
 import select
-import arch
-
+from scapy.arch import get_if_addr
 from Color import bcolors
 from Group import Group
 from Player import Player
@@ -60,7 +59,7 @@ def client_handler(client_conn, addr):
 
 def recive_new_connections():
     print(bcolors.OKBLUE + bcolors.UNDERLINE + 'Server started,\n listening on IP address 172.1.0.4...')
-    TCP_IP = arch.get_if_addr("eth1")    #socket.gethostbyname(socket.gethostname())
+    TCP_IP = get_if_addr("eth1")    #socket.gethostbyname(socket.gethostname())
     TCP_PORT = 5005
     BUFFER_SIZE = 20
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
