@@ -2,7 +2,9 @@ import socket
 import threading
 import time
 from Color import bcolors
-import msvcrt
+import tty
+import sys
+
 
 list_of_clients = []
 
@@ -23,7 +25,7 @@ def listen_to_offer_and_connect():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    client_socket.bind(("", 13117))
+    client_socket.bind(('', 13117))
     # here we are waiting for a server to sand us it's special form of offer message
     data, addr = client_socket.recvfrom(8)
     # if we got an OK message we procceed to check it's headers
@@ -69,9 +71,11 @@ if __name__ == '__main__':
                 except Exception as e:
                     pass
                 # reciveing characters from the user and send it to the server in order to win!
-                input_char = msvcrt.getch()
+                tty.setraw(sys.stdin)
+                input_char = sys.stdin.read(1).encode('utf-8')
+                #input_char = msvcrt.getch()
                 # input_char = 'c'.encode('utf-8')
                 client_socket.send(input_char)
-                print(input_char.decode('utf-8'))
+                #print(input_char.decode('utf-8'))
     except:
         pass

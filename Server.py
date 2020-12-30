@@ -3,6 +3,7 @@ import threading
 import time
 import random
 import select
+import arch
 
 from Color import bcolors
 from Group import Group
@@ -59,7 +60,7 @@ def client_handler(client_conn, addr):
 
 def recive_new_connections():
     print(bcolors.OKBLUE + bcolors.UNDERLINE + 'Server started,\n listening on IP address 172.1.0.4...')
-    TCP_IP = socket.gethostbyname(socket.gethostname())
+    TCP_IP = arch.get_if_addr("eth1")    #socket.gethostbyname(socket.gethostname())
     TCP_PORT = 5005
     BUFFER_SIZE = 20
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -98,10 +99,7 @@ def print_result():
     if winning_group == 0:
         message = 'its a draw guys! everybody wins'
     else:
-        message = 'Game over!\nGroup 1 typed in ' + str(group1_score) + '' \
-                                                                        ' characters. Group 2 typed in ' + str(
-            group2_score) + ' characters.\n' + 'group ' + str(winning_group) + ' wins!' \
-                                                                               ' Congratulations to the winners:\n==\n' + \
+        message = 'Game over!\nGroup 1 typed in ' + str(group1_score) + ' characters. Group 2 typed in ' + str(group2_score) + ' characters.\n' + 'group ' + str(winning_group) + ' wins! Congratulations to the winners:\n==\n' + \
                   groups[winning_group - 1].print_players()
     broadcast_all(message)
 
