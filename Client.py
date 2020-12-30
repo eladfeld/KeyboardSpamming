@@ -78,7 +78,7 @@ if __name__ == '__main__':
                     input_char = ''
                     if select.select([sys.stdin], [], [], 0)[0]:
                         input_char = tty.setcbreak(sys.stdin)
-                    client_socket.send(input_char)
+                        client_socket.send(input_char.encode('utf-8'))
                     #print(input_char.decode('utf-8'))
         except Exception as e:
             print(e)
