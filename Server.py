@@ -113,8 +113,8 @@ def get_most_typed_char():
     char = ' '
     history = groups[0].get_history() + groups[1].get_history()
     try:
-    if len(history) > 0:
-        char = mode(history)
+        if len(history) > 0:
+            char = mode(history)
     except:
         pass
     return  char, history.count(char)
