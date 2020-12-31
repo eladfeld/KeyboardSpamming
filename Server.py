@@ -93,6 +93,7 @@ def receive_new_connections():
             client_thread.start()
         except:
             pass
+    server_socket.close()
     print('init part is done!!')
 
 
@@ -109,15 +110,22 @@ def sand_welcome_messages():
 
 
 def get_most_typed_char():
+    char = ' '
     history = groups[0].get_history() + groups[1].get_history()
-    char = mode(history)
-    return history.count(char), char
+    try:
+    if len(history) > 0:
+        char = mode(history)
+    except:
+        pass
+    return  char, history.count(char)
 
 
 # this function is called when the game part is over and sends a game-over message to all players in the game
 def print_result():
-    group1_score = str(groups[0].get_group_score())
-    group2_score = str(groups[1].get_group_score())
+    group1_score = groups[0].get_group_score()
+    group2_score = groups[1].get_group_score()
+    avarage_char_typed = (group1_score + group2_score) / NUMBER_OF_SECONDS_TO_WAIT
+    most_typed_char, number_of_instances = get_most_typed_char()
     winning_group = 1 if (group2_score < group1_score) else 2 if (group2_score > group1_score) else 0
     message = ''
     if winning_group == 0:
@@ -126,12 +134,10 @@ def print_result():
         message = 'Game over!\nGroup 1 typed in ' + str(group1_score) + ' characters. Group 2 typed in ' + \
                   str(group2_score) + ' characters.\n' + 'group ' + str(winning_group) \
                   + ' wins! Congratulations to the winners:\n==\n' + groups[winning_group - 1].print_players()
-        avarage_char_typed = (group1_score + group2_score) / NUMBER_OF_SECONDS_TO_WAIT
-        most_typed_char, number_of_instances = get_most_typed_char()
         # print some statistics
         message += bcolors.OKBLUE + 'SOME STATISTICS:\nthe average characters per seconds: ' + \
                    str(avarage_char_typed) + '\nthe most typed character is: ' + most_typed_char + '\nit was typed: ' \
-                   + str(number_of_instances)
+                   + str(number_of_instances) + ' times!'
     broadcast_all(message)
 
 

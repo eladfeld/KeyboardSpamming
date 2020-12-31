@@ -3,6 +3,7 @@ from Color import bcolors
 import select
 import tty
 import sys
+import termios
 
 
 MAGIC_COOKIE = [0xfe, 0xed, 0xbe, 0xef]
@@ -15,10 +16,11 @@ MESSAGE_TYPE_SIZE = 1
 PORT_SIZE = 2
 TEAM_NAME = b'GiveUs100Please\n'
 stop = False
+old_settings = termios.tcgetattr(sys.stdin)
 
 
 def listen_to_offer_and_connect():
-    try:
+    try: 
         print(bcolors.HEADER + 'Client started, listening for offer requests...')
         # first we listen and looking for server that offer us to play under their host!
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
@@ -46,6 +48,8 @@ def listen_to_offer_and_connect():
                 client_socket.connect(address)
                 client_socket.send(TEAM_NAME)
                 return client_socket
+            else:
+                print(bcolors.WARNING + 'bad format!')
     except Exception as e:
         pass
 
@@ -82,6 +86,8 @@ if __name__ == '__main__':
                     if select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
                         input_char = sys.stdin.read(1)
                         client_socket.send(input_char.encode('utf-8'))
-                        print(bcolors.OKGREEN + input_char.decode('utf-8'))
+                        print(bcolors.OKBLUE + input_char)
         except Exception as e:
-            pass
+            print(e)
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+

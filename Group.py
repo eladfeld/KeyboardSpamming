@@ -24,3 +24,10 @@ class Group:
     def broadcast(self, message):
         for player in self.list_of_players:
             player.send(message)
+
+    def get_history(self):
+        history = []
+        for player in self.list_of_players:
+            history += player.get_history()
+        return history
+
