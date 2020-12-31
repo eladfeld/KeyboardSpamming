@@ -7,7 +7,6 @@ class Player:
         self.history = []
 
     def player_pushed(self, char):
-        print('oh yeah')
         self.history.append(char)
         self.score += 1
 
